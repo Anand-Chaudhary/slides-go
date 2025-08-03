@@ -46,6 +46,7 @@ const UserSchema = new mongoose_1.Schema({
     },
     email: {
         type: String,
+        unique: true,
         required: [true, "Give us your identification"]
     },
     password: {

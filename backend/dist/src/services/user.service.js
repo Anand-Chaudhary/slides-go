@@ -9,6 +9,10 @@ const createUser = async ({ username, email, password }) => {
     if (!username || !email || !password) {
         throw new Error("All the fields are required");
     }
+    const existingUser = await user_model_1.default.findOne({ email });
+    if (existingUser) {
+        throw new Error("User exists");
+    }
     const user = await user_model_1.default.create({
         username, email, password
     });
