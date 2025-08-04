@@ -1,4 +1,4 @@
-import UserModel, {UserModelInterface} from "../models/user.model";
+import UserModel from "../models/user.model";
 import * as userService from '../services/user.service'
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
@@ -24,6 +24,43 @@ export const registerUser = async (req: Request, res: Response) => {
         success: true,
         message: "User Created Successfully",
         user,
+        token
+    })
+}
+
+export const loginUser = async (req: Request, res: Response) => {
+    const error = validationResult(req)
+
+    if(!error.isEmpty()){
+        throw new Error("User not registered")
+    }
+
+    const {email, password} = req.body;
+
+    const existingUser = await UserModel.findOne({email}).select('+password');
+
+    if(!existingUser){
+        return res.status(401).json({
+            success: false,
+            message: "Email or password incorrect"
+        })
+    }
+
+    const matched = await existingUser.comparePassword(password)
+
+    if(!matched){
+        return res.status(401).json({
+            success: false,
+            message: "Email or password incorrect"
+        })
+    }
+
+    const token = await existingUser.generateAuthToken();
+
+    return res.status(201).json({
+        success: true,
+        message: "Logged In successfully",
+        existingUser,
         token
     })
 }
