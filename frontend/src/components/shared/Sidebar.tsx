@@ -1,26 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import { Home, Plus, Settings, Presentation, HelpCircle, Sparkles, ChevronLeft, ChevronRight } from "lucide-react"
+import { Sparkles, ChevronLeft, ChevronRight, LogOutIcon } from "lucide-react"
 import { NavItem } from "./NavItems"
+import { Button } from "../ui/button"
+import HandleLogout from "@/utils/HandleLogout"
+import { BOTTOMITEMS, NAVIGATIONITEMS } from "@/constants/Navitems"
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [activeItem, setActiveItem] = useState("/home")
 
-  const navigationItems = [
-    { id: "/home", label: "Home", icon: Home },
-    { id: "/create", label: "Create", icon: Plus },
-    { id: "/presentation", label: "My Presentations", icon: Presentation },
-  ]
-
-  const bottomItems = [
-    { id: "/help", label: "Help", icon: HelpCircle },
-    { id: "/settings", label: "Settings", icon: Settings },
-  ]
-
   return (
-    <div  className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
       <div
         className={`
@@ -58,7 +50,7 @@ export default function Sidebar() {
         {/* Navigation */}
         <div className="flex-1 flex flex-col justify-between p-4">
           <nav className="space-y-2">
-            {navigationItems.map((item) => (
+            {NAVIGATIONITEMS.map((item) => (
               <NavItem
                 key={item.id}
                 item={item}
@@ -70,7 +62,7 @@ export default function Sidebar() {
           </nav>
 
           <nav className="space-y-2 border-t border-gray-200 dark:border-gray-700 pt-4">
-            {bottomItems.map((item) => (
+            {BOTTOMITEMS.map((item) => (
               <NavItem
                 key={item.id}
                 item={item}
@@ -79,6 +71,13 @@ export default function Sidebar() {
                 isCollapsed={isCollapsed}
               />
             ))}
+            <Button
+              onClick={() => HandleLogout()}
+              className="w-full text-xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-500">
+              {
+                isCollapsed ? <LogOutIcon /> : <p>Log Out</p>
+              }
+            </Button>
           </nav>
         </div>
       </div>

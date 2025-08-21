@@ -24,6 +24,7 @@ export const loginStore = create<LoginState>((set) => ({
 
         try {
             const res = await loginApi.loginUser(data)
+            console.log(res)
 
             const ok = res?.success === true
             const msg = res?.message as string | null

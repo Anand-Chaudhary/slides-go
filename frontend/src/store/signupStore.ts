@@ -19,21 +19,22 @@ export const registerStore = create<RegisterState>((set) => ({
     set({ loading: true, error: null, success: false });
     try {
       const res = await registerApi.createUser(data);
-
+      console.log(res)
+      
       const ok = res?.success === true
       const msg = res?.message as string
       const token = res?.token as string
 
-      if(ok){
+      if (ok) {
         localStorage.setItem('token', token)
         set({ loading: false, success: true, error: null, message: msg });
-      } else{
+      } else {
         set({
-        loading: false,
-        error: msg,
-        success: false,
-        message: msg
-      });
+          loading: false,
+          error: msg,
+          success: false,
+          message: msg
+        });
       }
     } catch (err: any) {
       console.log("error: ", err)
