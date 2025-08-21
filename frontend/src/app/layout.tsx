@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const poppinsSans = Poppins({
   variable: "--font-poppins",
@@ -9,9 +10,10 @@ const poppinsSans = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Slides Go",
-  description: "Slides Go is your solution for all your ppt needs",
-};
+  title: "Presento",
+  description: "Join Presento and create amazing presentations",
+  creator: "Aakash",
+}
 
 export default function RootLayout({
   children,
@@ -21,9 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${poppinsSans.variable} antialiased max-w-7xl mx-auto`}
+        className={`${poppinsSans.variable} antialiased`}
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );
