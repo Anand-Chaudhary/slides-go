@@ -6,4 +6,6 @@ const router = express.Router();
 
 router.get('/get-response', authUser, ai.getResult)
 
+router.get('/get-images', authUser, ai.generateImageController)
+
 export default router
