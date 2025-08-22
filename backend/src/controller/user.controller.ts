@@ -2,7 +2,7 @@ import BlacklistTokenModel from "../models/blacklistToken.model";
 import UserModel from "../models/user.model";
 import * as userService from '../services/user.service'
 import { Request, Response } from "express";
-import { cookie, validationResult } from "express-validator";
+import { validationResult } from "express-validator";
 
 export const registerUser = async (req: Request, res: Response) => {
     const error = validationResult(req);
@@ -66,6 +66,12 @@ export const loginUser = async (req: Request, res: Response) => {
         existingUser,
         token
     })
+}
+
+export const getUserProfile =  async (req: Request, res: Response) =>{
+    const safeUser = req.user?.toObject();
+    delete (safeUser as any).password;
+    return res.status(200).json(safeUser)
 }
 
 export const logoutUser = async (req: Request, res: Response)=>{
