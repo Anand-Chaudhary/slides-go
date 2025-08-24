@@ -1,6 +1,18 @@
+import { LucideIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-export const NavItem = ({ item, isBottom = false, isActive, onClick, isCollapsed }) => {
+interface NavItems{
+  item:{
+    icon: LucideIcon,
+    id: string,
+    label: string
+  },
+  isActive: boolean,
+  onClick: (data: string)=> void
+  isCollapsed: boolean
+}
+
+export const NavItem = ({ item, isActive, onClick, isCollapsed }: NavItems) => {
   const router = useRouter()
   const Icon = item.icon
 

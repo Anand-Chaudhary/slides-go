@@ -36,6 +36,7 @@ export const registerStore = create<RegisterState>((set) => ({
           message: msg
         });
       }
+      //eslint-disable-next-line
     } catch (err: any) {
       console.log("error: ", err)
     }

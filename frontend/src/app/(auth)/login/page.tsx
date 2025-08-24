@@ -43,7 +43,7 @@ export default function LoginPage() {
     }
 
     return ()=>{}
-  },[success,message,router])
+  },[success,message,router, error])
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-purple-200 via-pink-200 via-yellow-100 to-white">
@@ -127,7 +127,7 @@ export default function LoginPage() {
                 Sign In
               </Button>
               <div className="text-center text-sm text-gray-600">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <button onClick={()=>router.push(`/sign-up`)} className="text-purple-600 hover:cursor-pointer hover:text-purple-700 font-medium transition-colors duration-200 hover:underline">
                   Create account
                 </button>

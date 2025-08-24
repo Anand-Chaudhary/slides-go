@@ -39,7 +39,7 @@ export default function Register() {
       toast.error(message || error)
     
     return ()=>{}
-  }, [success, error, message])
+  }, [success, error, message, router])
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-purple-200 via-pink-200 via-yellow-100 to-white">

@@ -14,7 +14,7 @@ const HomePage = () => {
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">Welcome to Presento</h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg max-w-md mx-auto">
-            Transform your ideas into stunning presentations with AI. Just describe what you want and we'll create it
+            Transform your ideas into stunning presentations with AI. Just describe what you want and we&apos;ll create it
             for you.
           </p>
           <div className="mt-8 flex gap-4 justify-center">
