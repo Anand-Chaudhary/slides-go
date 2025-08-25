@@ -1,33 +1,36 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
 import { Send, Sparkles } from "lucide-react"
 import { PRESENTATION_TITLES } from "@/constants/PresentationItems"
+import { createPPT } from "@/store/createPPTStore"
+import { toast } from "sonner"
 
 const Create = () => {
   const [input, setInput] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const { loading, error, success, create, message } = createPPT()
 
   const handleCardClick = (title: string) => {
     setInput(title)
   }
 
   const handleSubmit = async () => {
-    if (!input.trim()) return
+    console.log("Sending to backend:", input)
 
-    setIsLoading(true)
-    // TODO: Send to backend
-    console.log("[v0] Sending to backend:", input)
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      // Navigate to presentation editor or results page
-    }, 2000)
+    const res = create(input);
   }
+
+  useEffect(() => {
+    if (success) {
+      toast.success(message);
+    } else {
+      toast.success(error?.message)
+    }
+  }, [success, message, error])
+
   return (
     <main className="flex-1 overflow-auto">
       <div className="max-w-4xl mx-auto p-8">
@@ -47,7 +50,7 @@ const Create = () => {
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="What do you want to create? (e.g., A presentation about sustainable energy solutions for small businesses)"
+              placeholder="What do you want to create make sure to send the number of pages you want? (e.g., A 4 page presentation about sustainable energy solutions for small businesses)"
               className="min-h-[120px] text-lg p-6 border-2 border-purple-200 focus:border-purple-400 rounded-xl resize-none shadow-lg bg-white/80 backdrop-blur-sm"
             />
             <div className="absolute top-4 right-4">
@@ -57,10 +60,10 @@ const Create = () => {
 
           <Button
             onClick={handleSubmit}
-            disabled={!input.trim() || isLoading}
+            disabled={!input.trim() || loading}
             className="mt-4 px-8 py-3 text-lg font-semibold bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-400 hover:from-purple-600 hover:via-pink-600 hover:to-yellow-500 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            {isLoading ? (
+            {loading ? (
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Creating...
