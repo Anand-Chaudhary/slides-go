@@ -6,10 +6,12 @@ import userRoutes from './routes/user.routes'
 import aiRoutes from './routes/ai.routes'
 import dbConnect from './db/db'
 import cookie from 'cookie-parser'
+import supabase from './services/supabase.service'
 dotenv.config();
 
 const app = express();
 dbConnect()
+console.log(supabase?.storage);
 
 app.use(cors({
     origin: "http://localhost:3000",
