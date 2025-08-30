@@ -8,4 +8,7 @@ router.get('/get-response', authUser, ai.getResult)
 
 router.get('/get-images', authUser, ai.generateImageController)
 
+// New route for complete PPT with images
+router.get('/get-complete-ppt', authUser, ai.generateCompletePPT)
+
 export default router

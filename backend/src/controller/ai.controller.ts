@@ -18,6 +18,7 @@ export const getResult = async (req: Request, res: Response) => {
       success: true,
       message: "PPT Fetched Successfully",
       result,
+      slug: result?.title.split(' ').join('-'),
       createdBy: req.user?.username,
       createdAt: Date.now()
     });
@@ -58,6 +59,72 @@ export const generateImageController = async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       error: error?.message || "Internal server error",
+    });
+  }
+};
+
+export const generateCompletePPT = async (req: Request, res: Response) => {
+  try {
+    const prompt = req.query.prompt;
+
+    if (!prompt) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Prompt is required" 
+      });
+    }
+
+    if (typeof prompt !== "string") {
+      return res.status(400).json({ 
+        success: false,
+        error: "Prompt must be a string" 
+      });
+    }
+
+    // Generate the PPT content structure
+    const pptContent = await ai.generateContent(prompt);
+    
+    // Generate images for each page
+    const pagesWithImages = await Promise.all(
+      pptContent.pages.map(async (page: any) => {
+        try {
+          const imageUrls = await ai.generateImages(page.prompt);
+          return {
+            ...page,
+            imageUrl: imageUrls && imageUrls.length > 0 ? imageUrls[0] : null,
+            // Remove the prompt since we now have the actual image
+            prompt: undefined
+          };
+        } catch (imageError) {
+          console.error(`Error generating image for page ${page.pageNo}:`, imageError);
+          return {
+            ...page,
+            imageUrl: null,
+            prompt: undefined
+          };
+        }
+      })
+    );
+
+    const completePPT = {
+      ...pptContent,
+      pages: pagesWithImages
+    };
+
+    return res.json({
+      success: true,
+      message: "Complete PPT generated successfully",
+      result: completePPT,
+      slug: completePPT.title.split(' ').join('-'),
+      createdBy: req.user?.username,
+      createdAt: Date.now()
+    });
+
+  } catch (err) {
+    console.log("Error in generateCompletePPT:", err);
+    return res.status(500).json({ 
+      success: false,
+      message: "Internal Server Error" 
     });
   }
 };

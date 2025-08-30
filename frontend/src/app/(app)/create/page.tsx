@@ -6,28 +6,37 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
 import { Send, Sparkles } from "lucide-react"
 import { PRESENTATION_TITLES } from "@/constants/PresentationItems"
-import { createPPT } from "@/store/createPPTStore"
+import { usePPTStore } from "@/store/createPPTStore"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 const Create = () => {
+  const router = useRouter()
   const [input, setInput] = useState("")
-  const { loading, error, success, create, message } = createPPT()
+  const { loading, error, success, message, create } = usePPTStore()
 
   const handleCardClick = (title: string) => {
     setInput(title)
   }
 
   const handleSubmit = async () => {
-    console.log("Sending to backend:", input)
+    if (!input.trim()) return
 
-    const res = create(input);
+    try {
+      const res = await create(input) // properly await
+      if (res?.slug) {
+        router.push(`/presentation/${res.slug}`)
+      }
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   useEffect(() => {
     if (success) {
-      toast.success(message);
-    } else {
-      toast.success(error?.message)
+      toast.success(message || "PPT generated successfully!")
+    } else if (error) {
+      toast.error(typeof error === "string" ? error : error?.message || "Something went wrong")
     }
   }, [success, message, error])
 
@@ -50,7 +59,7 @@ const Create = () => {
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="What do you want to create make sure to send the number of pages you want? (e.g., A 4 page presentation about sustainable energy solutions for small businesses)"
+              placeholder="What do you want to create? Make sure to send the number of pages you want. (e.g., A 4 page presentation about sustainable energy solutions for small businesses)"
               className="min-h-[120px] text-lg p-6 border-2 border-purple-200 focus:border-purple-400 rounded-xl resize-none shadow-lg bg-white/80 backdrop-blur-sm"
             />
             <div className="absolute top-4 right-4">
@@ -79,7 +88,9 @@ const Create = () => {
 
         {/* Title Cards */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Popular Presentation Types</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            Popular Presentation Types
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {PRESENTATION_TITLES.map((title, index) => (

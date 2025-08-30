@@ -1,48 +1,54 @@
-import { createApi } from "@/services/api/createApi";
-import { AxiosError } from "axios";
-import { create } from "zustand";
+import { createApi } from "@/services/api/createApi"
+import { ContentResponse } from "@/types/response.type"
+import { AxiosError } from "axios"
+import { create } from "zustand"
 
 interface GenerateContent {
-    loading: boolean
-    success: boolean
-    error: AxiosError | null,
-    message: string | null
-    create: (prompt: string) => Promise<void>
+  loading: boolean
+  success: boolean
+  error: AxiosError | null
+  message: string | null
+  ppt: ContentResponse | null
+  create: (prompt: string) => Promise<ContentResponse | undefined>
 }
 
-export const createPPT = create<GenerateContent>((set) => ({
-    loading: false,
-    success: false,
-    error: null,
-    message: null,
-    create: async (prompt) => {
-        set({
-            loading: true,
-            error: null,
-            success: false
-        })
-        try {
-            const res = await createApi.getContent(prompt)
-            const message = res?.message
-            console.log(res?.result);
-            
-            set({
-                loading: false,
-                error: null,
-                success: true,
-                message
-            })
-            return res?.result;
-            //eslint-disable-next-line
-        } catch (err: any) {
-            console.log(err);
-            
-            set({
-                loading: false,
-                error: err?.message || `Unable to fetch PPT`,
-                success: false,
-                message: null
-            })
-        }
+export const usePPTStore = create<GenerateContent>((set) => ({
+  loading: false,
+  success: false,
+  error: null,
+  message: null,
+  ppt: null,
+  create: async (prompt) => {
+    set({
+      loading: true,
+      error: null,
+      success: false,
+      ppt: null
+    })
+    try {
+      const res = await createApi.getContent(prompt)
+      const message = res?.message
+
+      set({
+        loading: false,
+        error: null,
+        success: true,
+        message,
+        ppt: res // save the entire PPT response here
+      })
+
+      return res
+      //eslint-disable-next-line
+    } catch (err: any) {
+      console.log(err)
+
+      set({
+        loading: false,
+        error: err?.message || `Unable to fetch PPT`,
+        success: false,
+        message: null,
+        ppt: null
+      })
     }
+  }
 }))
