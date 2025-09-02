@@ -1,4 +1,5 @@
 import mongoose, {Document, Schema, Model} from 'mongoose'
+import { PPT } from '../types/ppt.type';
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 
@@ -6,7 +7,7 @@ export interface User extends Document{
     username: string,
     email: string,
     password: string,
-    ppts: string[],
+    ppts: PPT[],
     generateAuthToken(): Promise<string>,
     comparePassword(password: string): Promise<boolean>
 }
@@ -29,8 +30,9 @@ const UserSchema: Schema<User> = new Schema({
         type: String,
         required: [true, "Dont you want security"]
     },
-    ppts:{
-        type: [String]
+    ppts: {
+        type: [Object],
+        default: []
     }
 })
 
