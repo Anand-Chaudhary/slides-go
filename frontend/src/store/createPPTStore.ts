@@ -34,7 +34,7 @@ export const usePPTStore = create<GenerateContent>((set) => ({
         error: null,
         success: true,
         message,
-        ppt: res // save the entire PPT response here
+        ppt: res
       })
 
       return res

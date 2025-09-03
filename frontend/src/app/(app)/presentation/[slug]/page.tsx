@@ -1,20 +1,36 @@
-"use client"
+"use client";
 
-import { usePPTStore } from "@/store/createPPTStore"
-import { useParams } from "next/navigation"
+import { useEffect } from "react";
+import { useGetPPTStore } from "@/store/getPPTStore";
+import { useParams } from "next/navigation";
 
-export default function PresentationWithSlug(){
-  const { slug } = useParams<{ slug: string }>()
-  const { ppt } = usePPTStore()
+export default function PresentationWithSlug() {
+  const { slug } = useParams<{ slug: string }>();
+  const { ppt, loading, error, getPPT } = useGetPPTStore();
 
-  if (!ppt || ppt.slug !== slug) {
-    return <p>No PPT data found. Go back and create one.</p>
-  }
+  useEffect(() => {
+    if (slug) {
+      getPPT(slug);
+    }
+  }, [slug, getPPT]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!ppt) return <p>No PPT data found. Go back and create one.</p>;
+
+  const typedPPT = ppt as PPT;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">{ppt.result.title}</h1>
-      <p>{ppt.createdBy}</p>
+      <h1 className="text-2xl font-bold">{typedPPT.title}</h1>
+      <div>
+        {typedPPT.pages && typedPPT.pages.map((page) => (
+          <div key={page.pageNo} className="mb-4">
+            <h2 className="text-lg font-semibold">{page.title}</h2>
+            <p>{page.description}</p>
+          </div>
+        ))}
+      </div>
     </div>
-  )
+  );
 }

@@ -23,7 +23,7 @@ const Create = () => {
     if (!input.trim()) return
 
     try {
-      const res = await create(input) // properly await
+      const res = await create(input)
       if (res?.slug) {
         router.push(`/presentation/${res.slug}`)
       }
