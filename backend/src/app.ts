@@ -7,6 +7,7 @@ import aiRoutes from './routes/ai.routes'
 import dbConnect from './db/db'
 import cookie from 'cookie-parser'
 import supabase from './services/supabase.service'
+import pptRoutes from './routes/ppt.routes'
 dotenv.config();
 
 const app = express();
@@ -27,5 +28,6 @@ app.use(cookie())
 
 app.use('/users', userRoutes)
 app.use('/ai', aiRoutes)
+app.use('/ppt', pptRoutes)
 
 export default app
