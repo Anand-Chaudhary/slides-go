@@ -12,7 +12,7 @@ export default function Sidebar() {
   const [activeItem, setActiveItem] = useState("/home")
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex fixed h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
       <div
         className={`

@@ -23,11 +23,15 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
     if (!authorized) return null
 
     return (
-        <>
-            <main className="flex h-screen bg-gray-50 dark:bg-gray-900">
-                <Sidebar />
-                {children}
-            </main>
-        </>
+        <main className="flex h-screen w-full overflow-auto bg-gray-50 dark:bg-gray-900">
+            <div className="flex w-full h-full">
+                <div className="w-64 min-w-64 h-full">
+                    <Sidebar />
+                </div>
+                <div className="flex-1 p-5 h-full overflow-auto">
+                    {children}
+                </div>
+            </div>
+        </main>
     )
 }

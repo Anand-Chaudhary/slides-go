@@ -33,7 +33,7 @@ export async function generateContent(prompt: string) {
                 description: { type: Type.STRING, description: "2-3 line description of the page" },
                 points: {
                   type: Type.ARRAY,
-                  description: "3-4 Key points for the page (optional for Introduction, Table of Contents, and Thank You)",
+                  description: "5-7 Key points for the page (optional for Introduction, Table of Contents, and Thank You)",
                   items: { type: Type.STRING }
                 },
                 prompt: { type: Type.STRING, description: "Prompt for generating image for this page" }

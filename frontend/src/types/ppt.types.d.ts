@@ -6,9 +6,13 @@ type PPTPage = {
   imageUrl?: string;
 };
 
-type PPT = {
+export type PPT = {
   _id: string;
   title: string;
   pages: PPTPage[];
   slug?: string;
 };
+
+export interface TemplateProps {
+  ppt: PPT;
+}
