@@ -6,4 +6,6 @@ const router = express.Router()
 
 router.get('/get-ppt', authUser, pptController.getPPT)
 
+router.get('/get-all-ppt', authUser, pptController.getAllPPT)
+
 export default router

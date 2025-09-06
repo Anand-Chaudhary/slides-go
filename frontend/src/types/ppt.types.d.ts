@@ -7,7 +7,7 @@ type PPTPage = {
 };
 
 export type PPT = {
-  _id: string;
+  _id?: string;
   title: string;
   pages: PPTPage[];
   slug?: string;

@@ -6,3 +6,10 @@ export const getPPTApi = {
         return data;
     }
 }
+
+export const getAllPPTApi = {
+    getAllPPT: async ()=>{
+        const {data} = await axiosInstance.get(`/ppt/get-all-ppt`);
+        return data;
+    }
+}

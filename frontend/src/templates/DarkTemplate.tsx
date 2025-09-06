@@ -7,7 +7,7 @@ const DarkTemplate = ({ppt}: TemplateProps) => {
             {ppt.pages?.map((page) => (
                 <div
                     key={page.pageNo}
-                    className="relative w-full aspect-[16/9] rounded-2xl shadow-2xl overflow-hidden"
+                    className="relative w-full h-auto rounded-2xl shadow-2xl overflow-hidden"
                 >
                     {/* Background Gradient */}
                     <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black" />

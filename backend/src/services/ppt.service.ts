@@ -49,3 +49,23 @@ export const getPPT = async (req: Request, res: Response) => {
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
+
+export const getAllPPT = async (req: Request, res: Response) => {
+    try {
+        const userEmail = req.user?.email;
+        if (!userEmail) {
+            return res.status(401).json({ success: false, message: "Unauthorized" });
+        }
+        const user = await UserModel.findOne({ email: userEmail });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        const slugs = user.ppts.map((ppt: any) => ppt.slug).filter(Boolean);
+        return res.json({ success: true, slugs });
+    } catch (err: any) {
+        return res.status(400).json({
+            success: false,
+            message: "Failed to fetch PPTs"
+        });
+    }
+}

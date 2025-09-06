@@ -8,12 +8,20 @@ import { Send, Sparkles } from "lucide-react"
 import { PRESENTATION_TITLES } from "@/constants/PresentationItems"
 import { usePPTStore } from "@/store/createPPTStore"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 const Create = () => {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const template = searchParams.get("template") || ""
   const [input, setInput] = useState("")
   const { loading, error, success, message, create } = usePPTStore()
+
+  useEffect(() => {
+    if (!template) {
+      router.replace("/template")
+    }
+  }, [template, router])
 
   const handleCardClick = (title: string) => {
     setInput(title)
@@ -25,7 +33,7 @@ const Create = () => {
     try {
       const res = await create(input)
       if (res?.slug) {
-        router.push(`/presentation/${res.slug}`)
+        router.push(`/presentation/${res.slug}?template=${template}`)
       }
     } catch (err) {
       console.error(err)

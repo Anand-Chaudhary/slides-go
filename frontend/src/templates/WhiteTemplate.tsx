@@ -9,12 +9,10 @@ export default function WhiteTemplate({ ppt }: TemplateProps) {
         {ppt.pages?.map((page) => (
           <div
             key={page.pageNo}
-            className="relative w-full aspect-[16/9] bg-white rounded-xl shadow-xl overflow-hidden p-10 flex flex-col"
+            className="relative w-full h-auto bg-white rounded-xl shadow-xl overflow-hidden p-10 flex flex-col"
           >
             {/* Title */}
-            <h1 className="text-4xl font-bold text-center text-gray-900 mb-6">
-              {page.title}
-            </h1>
+            <input value={page.title} className="text-4xl font-bold text-center text-gray-900 mb-6" />
 
             {/* Slide Content */}
             <div className="flex flex-1 gap-8">
