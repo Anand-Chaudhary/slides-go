@@ -9,6 +9,7 @@ import WhiteTemplate from "@/templates/WhiteTemplate";
 import MedivialTemplate from "@/templates/MedivialTemplate";
 import { PPT } from "@/types/ppt.types";
 
+//eslint-disable-next-line
 const templateMap: Record<string, any> = {
   WhiteTemplate,
   DarkTemplate,
