@@ -15,11 +15,17 @@ dbConnect()
 console.log(supabase?.storage);
 
 app.use(cors({
-    origin: "http://localhost:3000",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    origin: (origin, callback) => {
+        const allowedOrigins = [process.env.DEVELOPMENT_URL, process.env.PRODUCTION_URL];
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
     credentials: true
 }));
-
 
 app.use(morgan('dev'));
 app.use(express.json());
