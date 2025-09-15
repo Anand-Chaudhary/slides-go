@@ -8,4 +8,6 @@ router.get('/get-ppt', authUser, pptController.getPPT)
 
 router.get('/get-all-ppt', authUser, pptController.getAllPPT)
 
+router.post('/convert-ppt', pptController.convertPPT)
+
 export default router

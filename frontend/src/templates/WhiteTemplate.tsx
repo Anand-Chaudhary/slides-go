@@ -1,29 +1,63 @@
 import { TemplateProps } from "@/types/ppt.types";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function WhiteTemplate({ ppt }: TemplateProps) {
+  const [pages, setPages] = useState(ppt.pages || []);
+
+  const handleChange = (pageIdx: number, field: string, value: any) => {
+    setPages((prev) =>
+      prev.map((p, idx) =>
+        idx === pageIdx ? { ...p, [field]: value } : p
+      )
+    );
+  };
+
+  const handlePointChange = (pageIdx: number, pointIdx: number, value: string) => {
+    setPages((prev) =>
+      prev.map((p, idx) =>
+        idx === pageIdx
+          ? { ...p, points: p.points.map((pt, i) => (i === pointIdx ? value : pt)) }
+          : p
+      )
+    );
+  };
+
   return (
     <div>
       {/* Presentation */}
       <div className="flex flex-col items-center my-4 gap-8">
-        {ppt.pages?.map((page) => (
+        {pages.map((page, pageIdx) => (
           <div
             key={page.pageNo}
             className="relative w-full h-auto bg-white rounded-xl shadow-xl overflow-hidden p-10 flex flex-col"
           >
             {/* Title */}
-            <input value={page.title} className="text-4xl font-bold text-center text-gray-900 mb-6" />
+            <input
+              value={page.title}
+              className="text-2xl font-bold text-center text-gray-900 mb-6 w-full"
+              onChange={(e) => handleChange(pageIdx, "title", e.target.value)}
+            />
 
             {/* Slide Content */}
             <div className="flex flex-1 gap-8">
               {/* Left side: text */}
               <div className="flex-1 flex flex-col gap-6">
-                <p className="text-2xl font-medium text-gray-700 leading-relaxed">
-                  {page.description}
-                </p>
-                <ul className="list-disc list-inside text-gray-800 text-xl space-y-4">
+                <textarea
+                  className="text-lg font-medium text-gray-700 leading-relaxed w-full mb-2 p-2 rounded"
+                  value={page.description}
+                  onChange={(e) => handleChange(pageIdx, "description", e.target.value)}
+                  rows={3}
+                />
+                <ul className="list-disc text-gray-800 text-base space-y-2">
                   {page.points.map((point, idx) => (
-                    <li key={idx}>{point}</li>
+                    <li key={idx}>
+                      <input
+                        className="w-full bg-transparent border-b border-gray-300 text-base p-1"
+                        value={point}
+                        onChange={(e) => handlePointChange(pageIdx, idx, e.target.value)}
+                      />
+                    </li>
                   ))}
                 </ul>
               </div>
