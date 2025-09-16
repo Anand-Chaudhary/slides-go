@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { getAllPPTApi, getPPTApi } from '../services/api/getPPTApi';
+import { downloadPPTApi, getAllPPTApi, getPPTApi } from '../services/api/getPPTApi';
+import { PPT } from '@/types/ppt.types';
 
 interface PPTState {
   //eslint-disable-next-line
@@ -7,7 +8,8 @@ interface PPTState {
   loading: boolean;
   error: string | null;
   getPPT: (slug: string) => Promise<void>;
-  getAllPPT: () => Promise<void>
+  getAllPPT: () => Promise<void>;
+  downloadPPT: (ppt: PPT) => Promise<{ success: boolean; message: string; url: string }>;
 }
 
 export const useGetPPTStore = create<PPTState>((set) => ({
@@ -32,6 +34,18 @@ export const useGetPPTStore = create<PPTState>((set) => ({
       //eslint-disable-next-line
     } catch (err: any) {
       set({ error: err?.response?.data?.message || 'Failed to fetch PPT', loading: false });
+    }
+  },
+  downloadPPT: async (ppt: PPT) => {
+    set({ loading: true, error: null });
+    try {
+      const data = await downloadPPTApi.downloadPPT(ppt!);
+      set({ loading: false });
+      return data;
+      //eslint-disable-next-line
+    } catch (err: any) {
+      set({ error: err?.response?.data?.message || 'Failed to fetch PPT', loading: false });
+      throw err;
     }
   }
 }));

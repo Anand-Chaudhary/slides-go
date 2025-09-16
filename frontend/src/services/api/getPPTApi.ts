@@ -1,3 +1,4 @@
+import { PPT } from '@/types/ppt.types';
 import axiosInstance from '../axiosInstance'
 
 export const getPPTApi = {
@@ -21,5 +22,12 @@ export const getAllPPTApi = {
             }
         });
         return data;
+    }
+}
+
+export const downloadPPTApi = {
+    downloadPPT: async (ppt: PPT) =>{
+        const { data } = await axiosInstance.post(`/ppt/convert-ppt`, ppt);
+        return data
     }
 }

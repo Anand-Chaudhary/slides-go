@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGetPPTStore } from "@/store/getPPTStore";
 import { useParams, useSearchParams } from "next/navigation";
 import ColorfulTemplate from "@/templates/ColorfulTemplate";
@@ -21,7 +21,9 @@ export default function PresentationPage() {
   const { slug } = useParams<{ slug: string }>();
   const searchParams = useSearchParams();
   const template = searchParams.get("template") || "WhiteTemplate";
-  const { ppt, loading, error, getPPT } = useGetPPTStore();
+  const { ppt, loading, error, getPPT, downloadPPT } = useGetPPTStore();
+  const [downloading, setDownloading] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const pptRef = useRef<PPT | null>(null);
 
   useEffect(() => {
@@ -41,21 +43,43 @@ export default function PresentationPage() {
   const typedPPT = ppt as PPT;
   const SelectedTemplate = templateMap[template] || WhiteTemplate;
 
-  const handleDownload = () => {
-    console.log("Download PPT Data:", pptRef.current);
-    alert("PPT data logged to console.");
+  const handleDownload = async () => {
+    setDownloading(true);
+    setDownloadUrl(null);
+    try {
+      const res = await downloadPPT(pptRef.current!);
+      if (res && res?.url) {
+        setDownloadUrl(res.url);
+      }
+      //eslint-disable-next-line
+    } catch (e: any) {
+      console.log("Error: ", e);
+    }
+    setDownloading(false);
   };
 
   return (
     <>
       <div className="flex justify-between items-center mb-4">
         <h1 className="font-bold text-2xl">{typedPPT.title}</h1>
-        <button
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          onClick={handleDownload}
-        >
-          Download PPT
-        </button>
+        {downloadUrl ? (
+          <a
+            href={downloadUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          >
+            Click to download
+          </a>
+        ) : (
+          <button
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition disabled:opacity-60"
+            onClick={handleDownload}
+            disabled={downloading}
+          >
+            {downloading ? 'Downloading...' : 'Start Download'}
+          </button>
+        )}
       </div>
       <SelectedTemplate ppt={typedPPT} />
     </>
