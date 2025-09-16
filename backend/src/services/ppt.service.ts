@@ -83,27 +83,43 @@ export const convertPPT = async (req: Request, res: Response) => {
         pages.forEach((page) => {
             const slide = pptx.addSlide();
 
-            slide.addText(page.title, { x: 0.5, y: 0.3, fontSize: 28, bold: true });
+            slide.addText(page.title, {
+                x: 0.5,
+                y: 0.5,
+                w: 9,
+                fontSize: 28,
+                bold: true,
+            });
+
+            let currentY = 1.5;
 
             if (page.description) {
-                slide.addText(page.description, { x: 0.5, y: 1.2, fontSize: 18 });
+                slide.addText(page.description, {
+                    x: 0.7,
+                    y: currentY,
+                    w: 8,
+                    fontSize: 18,
+                });
+                currentY += 1; 
             }
 
             if (page.points?.length) {
                 slide.addText(page.points.map((p) => `• ${p}`).join("\n"), {
-                    x: 0.7,
-                    y: 2,
+                    x: 1,
+                    y: currentY,
+                    w: 7,
                     fontSize: 16,
                 });
+                currentY += page.points.length * 0.4; 
             }
 
             if (page.imageUrl) {
                 slide.addImage({
                     path: page.imageUrl,
-                    x: 6,
+                    x: 7,
                     y: 1.5,
-                    w: 3,
-                    h: 3,
+                    w: 2.5,
+                    h: 2.5,
                 });
             }
         });

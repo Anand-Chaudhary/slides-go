@@ -5,6 +5,7 @@ import { useState } from "react";
 export default function WhiteTemplate({ ppt }: TemplateProps) {
   const [pages, setPages] = useState(ppt.pages || []);
 
+  //eslint-disable-next-line
   const handleChange = (pageIdx: number, field: string, value: any) => {
     setPages((prev) =>
       prev.map((p, idx) =>
