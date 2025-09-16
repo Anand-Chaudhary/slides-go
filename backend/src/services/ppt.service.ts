@@ -1,7 +1,11 @@
 import PptxGenJS from "pptxgenjs";
 import UserModel from "../models/user.model";
 import { PPT, SavedPPTData } from "../types/ppt.type";
+import dotenv from 'dotenv';
 import { Request, Response } from 'express';
+import supabase from "./supabase.service";
+
+dotenv.config()
 
 export const savePPTToUser = async (email: string, ppt: PPT, slug: string) => {
     const user = await UserModel.findOne({ email });
@@ -72,73 +76,93 @@ export const getAllPPT = async (req: Request, res: Response) => {
 }
 
 export const convertPPT = async (req: Request, res: Response) => {
-    try {
-        const { title, pages }: PPT = req.body;
+  try {
+    const { title, pages }: PPT = req.body;
 
-        const pptx = new PptxGenJS();
+    const pptx = new PptxGenJS();
 
-        const cover = pptx.addSlide();
-        cover.addText(title, { x: 1, y: 1, fontSize: 32, bold: true });
+    // Cover slide
+    const cover = pptx.addSlide();
+    cover.addText(title, { x: 1, y: 1, fontSize: 32, bold: true });
 
-        pages.forEach((page) => {
-            const slide = pptx.addSlide();
+    // Content slides
+    pages.forEach((page) => {
+      const slide = pptx.addSlide();
+      slide.addText(page.title, {
+        x: 0.5,
+        y: 0.5,
+        w: 9,
+        fontSize: 28,
+        bold: true,
+      });
 
-            slide.addText(page.title, {
-                x: 0.5,
-                y: 0.5,
-                w: 9,
-                fontSize: 28,
-                bold: true,
-            });
+      let currentY = 1.5;
 
-            let currentY = 1.5;
-
-            if (page.description) {
-                slide.addText(page.description, {
-                    x: 0.7,
-                    y: currentY,
-                    w: 8,
-                    fontSize: 18,
-                });
-                currentY += 1; 
-            }
-
-            if (page.points?.length) {
-                slide.addText(page.points.map((p) => `• ${p}`).join("\n"), {
-                    x: 1,
-                    y: currentY,
-                    w: 7,
-                    fontSize: 16,
-                });
-                currentY += page.points.length * 0.4; 
-            }
-
-            if (page.imageUrl) {
-                slide.addImage({
-                    path: page.imageUrl,
-                    x: 7,
-                    y: 1.5,
-                    w: 2.5,
-                    h: 2.5,
-                });
-            }
+      if (page.description) {
+        slide.addText(page.description, {
+          x: 0.7,
+          y: currentY,
+          w: 8,
+          fontSize: 18,
         });
+        currentY += 2;
+      }
 
-        const buffer = await pptx.write({
-            outputType: "nodebuffer",
+      if (page.points?.length) {
+        slide.addText(page.points.map((p) => `• ${p}`).join("\n"), {
+          x: 0.5,
+          y: currentY,
+          w: 7,
+          fontSize: 16,
         });
+        currentY += page.points.length * 0.4;
+      }
 
-        res.setHeader(
-            "Content-Type",
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-        );
-        res.setHeader("Content-Disposition", "attachment; filename=presentation.pptx");
-        res.end(buffer);
+      if (page.imageUrl) {
+        slide.addImage({
+          path: page.imageUrl,
+          x: 7,
+          y: 2,
+          w: 2.5,
+          h: 2.5,
+        });
+      }
+    });
 
-    } catch (error) {
-        console.error("Error generating PPT:", error);
-        res
-            .status(500)
-            .json({ success: false, message: "Failed to generate PPT" });
-    }
+    // Generate PPTX buffer
+    const buffer = await pptx.write({ outputType: "nodebuffer" });
+
+    // Unique file name
+    const fileName = `${title.split(' ').join('-')}-${Date.now()}.pptx`;
+
+    // Upload to Supabase private bucket
+    const { error: uploadError } = await supabase.storage
+      .from("PPT-Bucket")
+      .upload(fileName, buffer, {
+        contentType:
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        upsert: true,
+      });
+
+    if (uploadError) throw uploadError;
+
+    // Create signed URL (expires in ~1 year)
+    const { data: signedUrlData, error: signedUrlError } =
+      await supabase.storage
+        .from("PPT-Bucket")
+        .createSignedUrl(fileName, 31536000); // 1 year in seconds
+
+    if (signedUrlError) throw signedUrlError;
+
+    return res.json({
+      success: true,
+      message: "PPT uploaded successfully",
+      url: signedUrlData.signedUrl,
+    });
+  } catch (error) {
+    console.error("Error generating/uploading PPT:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to generate/upload PPT" });
+  }
 };
